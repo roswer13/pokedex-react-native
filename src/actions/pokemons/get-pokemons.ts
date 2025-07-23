@@ -13,13 +13,14 @@ export const getPokemons = async (page: number, limit: number = 20): Promise<Pok
     try {
         const { data } = await pokeApi.get<PokeAPIPaginatedResponse>(`/pokemon?offset=${page * limit}&limit=${limit}`);
 
-        const pokemonsPromises = data.results.map((result) => {
+        const pokemonPromises = data.results.map((result) => {
             return pokeApi.get<PokeAPIPokemon>(result.url);
         });
 
-        const pokemonsResponses = await Promise.all(pokemonsPromises);
-        const pokemons = pokemonsResponses.map(item => PokemonMapper.pokeApiPokemonToEntity(item.data));
-        return pokemons;
+        const pokemonsResponses = await Promise.all(pokemonPromises);
+        const pokemonsPromises = pokemonsResponses.map(item => PokemonMapper.pokeApiPokemonToEntity(item.data));
+
+        return await Promise.all(pokemonsPromises);
     } catch (error) {
         console.error('Error fetching pokemons:', error);
         throw error;
