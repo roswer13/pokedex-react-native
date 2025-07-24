@@ -2,16 +2,21 @@ import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import { FlatList, StyleSheet, View } from 'react-native'
 import { getPokemons } from '../../../actions/pokemons'
 import { PokeballBg } from '../../components/ui/PokeballBg'
-import { Text } from 'react-native-paper'
+import { FAB, Text, useTheme } from 'react-native-paper'
 import { globalTheme } from '../../../config/theme/global-theme'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { PokemonCard } from '../../components/pokemons/PokemonCard'
 import { FullScreenLoader } from '../../components/ui/FullScreenLoader'
+import { RootStackParams } from '../../navigator/StackNavigator'
+import { StackScreenProps } from '@react-navigation/stack'
 
-export const HomeScreen = () => {
+interface Props extends StackScreenProps<RootStackParams, 'HomeScreen'> { }
+
+export const HomeScreen = ({ navigation }: Props) => {
 
     const { top } = useSafeAreaInsets();
     const queryClient = useQueryClient();
+    const theme = useTheme();
 
     /**
      * This is the traditional way to fetch data using React Query.
@@ -60,6 +65,14 @@ export const HomeScreen = () => {
                 onEndReachedThreshold={0.6}
                 onEndReached={() => fetchNextPage()}
                 showsVerticalScrollIndicator={false}
+            />
+
+            <FAB
+                icon="magnify"
+                style={[globalTheme.fab, { backgroundColor: theme.colors.primary }]}
+                mode='elevated'
+                color={theme.dark ? 'black' : 'white'}
+                onPress={() => navigation.push('SearchScreen')}
             />
         </View>
     )
